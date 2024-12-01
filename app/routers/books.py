@@ -54,11 +54,11 @@ def update_hero(book_id: int, book_in: BookIn, session: SessionDep):
     return book_db
 
 @router.delete("/books/")
-async def delete_book(book_id: int, session: SessionDep)->BookOut:
-    book_db = session.get(Book, book_id)
+async def delete_book(book_id: int, session: SessionDep)->dict:
+    book_db = session.exec(select(Book).where(Book.id == book_id)).first()
     if not book_db:
-        raise HTTPException(status_code=404, detail="Hero not found")
-    book_db.delete(book_db)
+        raise HTTPException(status_code=404, detail="Book not found")
+    session.delete(book_db)
     session.commit()
-    return book_db
+    return {"status": True, "detail": "Book deleted"}
 
